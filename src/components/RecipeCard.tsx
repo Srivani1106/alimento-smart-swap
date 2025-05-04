@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
@@ -47,13 +48,15 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         </div>
       </CardContent>
       <CardFooter className="pt-0">
-        <Button 
-          variant="outline" 
-          className="w-full flex items-center justify-center gap-2 text-primary hover:text-primary/80"
-        >
-          View Recipe
-          <ChevronDown className="h-4 w-4" />
-        </Button>
+        <Link to={`/recipe/${recipe.id}`} className="w-full">
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-center gap-2 text-primary hover:text-primary/80"
+          >
+            View Recipe
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

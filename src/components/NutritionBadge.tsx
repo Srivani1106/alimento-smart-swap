@@ -15,16 +15,18 @@ const NutritionBadge: React.FC<NutritionBadgeProps> = ({
   unit = type === 'calories' ? 'kcal' : 'g',
   className 
 }) => {
-  const badgeClass = cn(
-    'nutrition-badge', 
-    {
-      'nutrition-badge-calories': type === 'calories',
-      'nutrition-badge-protein': type === 'protein',
-      'nutrition-badge-carbs': type === 'carbs',
-      'nutrition-badge-fat': type === 'fat',
-    },
-    className
-  );
+  const getStyles = () => {
+    switch (type) {
+      case 'calories':
+        return 'bg-purple-100 text-purple-700';
+      case 'protein':
+        return 'bg-blue-100 text-blue-700';
+      case 'carbs':
+        return 'bg-amber-100 text-amber-700';
+      case 'fat':
+        return 'bg-rose-100 text-rose-700';
+    }
+  };
   
   const labels = {
     calories: 'Cal',
@@ -34,7 +36,11 @@ const NutritionBadge: React.FC<NutritionBadgeProps> = ({
   };
 
   return (
-    <span className={badgeClass}>
+    <span className={cn(
+      'inline-block text-xs px-2 py-1 rounded-full',
+      getStyles(),
+      className
+    )}>
       {labels[type]}: {value}{unit}
     </span>
   );

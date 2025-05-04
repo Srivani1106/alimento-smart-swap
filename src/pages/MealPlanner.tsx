@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -165,9 +166,11 @@ const MealPlanner = () => {
                             <h3 className="font-medium">{recipe.name}</h3>
                             <p className="text-sm text-muted-foreground">{recipe.tags.join(', ')}</p>
                           </div>
-                          <Button size="sm" variant="ghost" className="gap-1">
-                            Add <ChevronRight className="h-4 w-4" />
-                          </Button>
+                          <Link to={`/recipe/${recipe.id}`}>
+                            <Button size="sm" variant="ghost" className="gap-1">
+                              Add <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     ))
@@ -178,7 +181,9 @@ const MealPlanner = () => {
                 
                 {filteredRecipes.length > 0 && (
                   <div className="text-center mt-4">
-                    <Button variant="outline" size="sm">View all recipes</Button>
+                    <Link to="/">
+                      <Button variant="outline" size="sm">View all recipes</Button>
+                    </Link>
                   </div>
                 )}
               </CardContent>
