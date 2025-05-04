@@ -1,18 +1,23 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useToast } from '@/components/ui/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { format } from 'date-fns';
+import { Calendar } from '@/components/ui/calendar';
 import Header from '@/components/Header';
 import NutritionBadge from '@/components/NutritionBadge';
 import { recipes } from '@/data/foodData';
-import { ArrowLeft, Clock, Users } from 'lucide-react';
+import { ArrowLeft, Clock, Users, Calendar as CalendarIcon } from 'lucide-react';
 
 const RecipeDetails = () => {
   const { id } = useParams();
   const { toast } = useToast();
+  const [date, setDate] = useState<Date>(new Date());
+  const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner'>('dinner');
   
   const recipe = recipes.find(recipe => recipe.id === id);
   
@@ -35,9 +40,10 @@ const RecipeDetails = () => {
   }
   
   const handleAddToMealPlan = () => {
+    // In a real app, this would update a meal plan store/API
     toast({
       title: "Recipe added",
-      description: `${recipe.name} has been added to your meal plan`,
+      description: `${recipe.name} has been added to your ${mealType} plan on ${format(date, 'MMM d, yyyy')}`,
     });
   };
 
@@ -132,12 +138,66 @@ const RecipeDetails = () => {
               </CardContent>
             </Card>
             
-            <Button
-              className="w-full bg-avocado hover:bg-avocado/90" 
-              onClick={handleAddToMealPlan}
-            >
-              Add to Meal Plan
-            </Button>
+            <Card>
+              <CardContent className="pt-6">
+                <h2 className="text-xl font-medium mb-4">Add to Meal Plan</h2>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button 
+                      variant={mealType === 'breakfast' ? 'default' : 'outline'} 
+                      className={mealType === 'breakfast' ? 'bg-avocado hover:bg-avocado/90' : ''} 
+                      onClick={() => setMealType('breakfast')}
+                    >
+                      Breakfast
+                    </Button>
+                    <Button 
+                      variant={mealType === 'lunch' ? 'default' : 'outline'} 
+                      className={mealType === 'lunch' ? 'bg-avocado hover:bg-avocado/90' : ''} 
+                      onClick={() => setMealType('lunch')}
+                    >
+                      Lunch
+                    </Button>
+                    <Button 
+                      variant={mealType === 'dinner' ? 'default' : 'outline'} 
+                      className={mealType === 'dinner' ? 'bg-avocado hover:bg-avocado/90' : ''} 
+                      onClick={() => setMealType('dinner')}
+                    >
+                      Dinner
+                    </Button>
+                  </div>
+                  
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className="w-full justify-start text-left font-normal"
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? format(date, 'PPP') : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={(newDate) => newDate && setDate(newDate)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  
+                  <Button
+                    className="w-full bg-avocado hover:bg-avocado/90" 
+                    onClick={handleAddToMealPlan}
+                  >
+                    Add to Meal Plan
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>
