@@ -4,7 +4,8 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
 import { Recipe } from '@/data/foodData';
-import { Clock } from 'lucide-react';
+import { Clock, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -46,9 +47,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
         </div>
       </CardContent>
       <CardFooter className="pt-0">
-        <button className="text-primary hover:text-primary/80 text-sm font-medium transition-colors">
+        <Button 
+          variant="outline" 
+          className="w-full flex items-center justify-center gap-2 text-primary hover:text-primary/80"
+        >
           View Recipe
-        </button>
+          <ChevronDown className="h-4 w-4" />
+        </Button>
       </CardFooter>
     </Card>
   );
