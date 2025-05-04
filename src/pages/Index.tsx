@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import UserProfile from '@/components/UserProfile';
 import FoodSwapCard from '@/components/FoodSwapCard';
@@ -34,9 +35,11 @@ const Index = () => {
                     Get personalized recipes that adapt to your dietary needs and available ingredients
                   </p>
                 </div>
-                <Button className="bg-avocado hover:bg-avocado/90">
-                  Start Meal Planning
-                </Button>
+                <Link to="/meal-planner">
+                  <Button className="bg-avocado hover:bg-avocado/90">
+                    Start Meal Planning
+                  </Button>
+                </Link>
               </div>
             </div>
             
