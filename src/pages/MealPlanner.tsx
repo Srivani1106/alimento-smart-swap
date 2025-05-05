@@ -103,6 +103,17 @@ const MealPlanner = () => {
       });
     }
   };
+  
+  // Handler for adding meals via the MealDisplay component
+  const handleAddMeal = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
+    // Set the active tab to the selected meal type
+    setActiveTab(mealType);
+    // Focus on the search input (handled by UI)
+    toast({
+      title: "Select a recipe",
+      description: `Select a recipe for ${mealType} on ${format(date, 'PPP')}`,
+    });
+  };
 
   // Generate a meal plan with improved feedback
   const generateMealPlan = async () => {
@@ -192,6 +203,7 @@ const MealPlanner = () => {
                 removeRecipeFromMealPlan={removeRecipeFromMealPlan}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
+                onAddMeal={handleAddMeal}
               />
             </div>
             

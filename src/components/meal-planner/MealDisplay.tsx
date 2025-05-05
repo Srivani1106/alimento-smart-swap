@@ -20,6 +20,7 @@ interface MealDisplayProps {
   removeRecipeFromMealPlan: (mealType: 'breakfast' | 'lunch' | 'dinner') => void;
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  onAddMeal: (mealType: 'breakfast' | 'lunch' | 'dinner') => void;
 }
 
 const MealDisplay: React.FC<MealDisplayProps> = ({
@@ -28,7 +29,8 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
   getRecipeById,
   removeRecipeFromMealPlan,
   activeTab,
-  setActiveTab
+  setActiveTab,
+  onAddMeal
 }) => {
   return (
     <Card className="flex-1">
@@ -54,7 +56,10 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">No meals planned for breakfast</p>
-                <Button className="bg-avocado hover:bg-avocado/90 gap-2">
+                <Button 
+                  className="bg-avocado hover:bg-avocado/90 gap-2"
+                  onClick={() => onAddMeal('breakfast')}
+                >
                   <Plus className="h-4 w-4" /> Add Breakfast
                 </Button>
               </div>
@@ -72,7 +77,10 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">No meals planned for lunch</p>
-                <Button className="bg-avocado hover:bg-avocado/90 gap-2">
+                <Button 
+                  className="bg-avocado hover:bg-avocado/90 gap-2"
+                  onClick={() => onAddMeal('lunch')}
+                >
                   <Plus className="h-4 w-4" /> Add Lunch
                 </Button>
               </div>
@@ -90,7 +98,10 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
             ) : (
               <div className="text-center py-8">
                 <p className="text-muted-foreground mb-4">No meals planned for dinner</p>
-                <Button className="bg-avocado hover:bg-avocado/90 gap-2">
+                <Button 
+                  className="bg-avocado hover:bg-avocado/90 gap-2"
+                  onClick={() => onAddMeal('dinner')}
+                >
                   <Plus className="h-4 w-4" /> Add Dinner
                 </Button>
               </div>
