@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { format } from 'date-fns';
-import { Plus } from 'lucide-react';
+import { Plus, List } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,17 +32,38 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
   setActiveTab,
   onAddMeal
 }) => {
+  // Check if the current meal plan has any meals assigned
+  const hasMeals = currentMealPlan.breakfast || currentMealPlan.lunch || currentMealPlan.dinner;
+  
   return (
     <Card className="flex-1">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Meals for {format(date, 'PPP')}</CardTitle>
+        {hasMeals && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-8 gap-1"
+          >
+            <List className="h-4 w-4" /> View Full Plan
+          </Button>
+        )}
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
           <TabsList className="w-full">
-            <TabsTrigger value="breakfast" className="flex-1">Breakfast</TabsTrigger>
-            <TabsTrigger value="lunch" className="flex-1">Lunch</TabsTrigger>
-            <TabsTrigger value="dinner" className="flex-1">Dinner</TabsTrigger>
+            <TabsTrigger value="breakfast" className="flex-1">
+              Breakfast
+              {currentMealPlan.breakfast && <span className="ml-1 h-2 w-2 rounded-full bg-green-500 inline-block"></span>}
+            </TabsTrigger>
+            <TabsTrigger value="lunch" className="flex-1">
+              Lunch
+              {currentMealPlan.lunch && <span className="ml-1 h-2 w-2 rounded-full bg-green-500 inline-block"></span>}
+            </TabsTrigger>
+            <TabsTrigger value="dinner" className="flex-1">
+              Dinner
+              {currentMealPlan.dinner && <span className="ml-1 h-2 w-2 rounded-full bg-green-500 inline-block"></span>}
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="breakfast" className="pt-4 min-h-[200px]">
