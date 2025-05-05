@@ -12,13 +12,15 @@ interface MealPlanCardProps {
   mealType: 'breakfast' | 'lunch' | 'dinner';
   recipe: Recipe | null;
   onRemove?: () => void;
+  onEdit?: () => void;
 }
 
 const MealPlanCard: React.FC<MealPlanCardProps> = ({ 
   date, 
   mealType, 
   recipe,
-  onRemove
+  onRemove,
+  onEdit
 }) => {
   const formatMealType = (type: string) => {
     return type.charAt(0).toUpperCase() + type.slice(1);
@@ -32,6 +34,16 @@ const MealPlanCard: React.FC<MealPlanCardProps> = ({
         </CardHeader>
         <CardContent className="text-center py-8">
           <p className="text-muted-foreground mb-4 text-sm">No meal planned</p>
+          {onEdit && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={onEdit}
+              className="gap-1 text-xs h-7"
+            >
+              <Pencil className="h-3 w-3" /> Add Meal
+            </Button>
+          )}
         </CardContent>
       </Card>
     );
