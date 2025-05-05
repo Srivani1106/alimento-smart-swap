@@ -22,6 +22,7 @@ const MealPlanner = () => {
   const [dietaryPreferences, setDietaryPreferences] = useState<string>('');
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>([]);
   const [activeTab, setActiveTab] = useState<string>('breakfast');
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const { toast } = useToast();
   
   // Filter recipes based on search query
@@ -103,51 +104,70 @@ const MealPlanner = () => {
     }
   };
 
-  // Generate a meal plan
-  const generateMealPlan = () => {
-    const preferences = dietaryPreferences.toLowerCase().split(',').map(p => p.trim());
+  // Generate a meal plan with improved feedback
+  const generateMealPlan = async () => {
+    setIsGenerating(true);
     
-    // Filter recipes based on preferences if any are provided
-    let eligibleRecipes = recipes;
-    if (preferences.length > 0 && preferences[0] !== '') {
-      eligibleRecipes = recipes.filter(recipe =>
-        preferences.some(pref => 
-          recipe.tags.some(tag => tag.toLowerCase().includes(pref))
-        )
-      );
+    try {
+      // Add a small delay to show the loading state
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      // If no recipes match the preferences, use all recipes
-      if (eligibleRecipes.length === 0) {
-        eligibleRecipes = recipes;
+      const preferences = dietaryPreferences.toLowerCase().split(',').map(p => p.trim());
+      
+      // Filter recipes based on preferences if any are provided
+      let eligibleRecipes = recipes;
+      if (preferences.length > 0 && preferences[0] !== '') {
+        eligibleRecipes = recipes.filter(recipe =>
+          preferences.some(pref => 
+            recipe.tags.some(tag => tag.toLowerCase().includes(pref))
+          )
+        );
+        
+        // If no recipes match the preferences, use all recipes
+        if (eligibleRecipes.length === 0) {
+          eligibleRecipes = recipes;
+          toast({
+            title: "No recipes match your preferences",
+            description: "Using all available recipes instead",
+          });
+        }
       }
-    }
 
-    // Generate meal plan
-    const newMealPlan: MealPlanEntry[] = [];
-    const startDate = new Date(date);
-    
-    for (let i = 0; i < daysToGenerate; i++) {
-      const currentDate = addDays(startDate, i);
+      // Generate meal plan
+      const newMealPlan: MealPlanEntry[] = [];
+      const startDate = new Date(date);
       
-      // Randomly select recipes for each meal
-      const breakfast = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
-      const lunch = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
-      const dinner = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
+      for (let i = 0; i < daysToGenerate; i++) {
+        const currentDate = addDays(startDate, i);
+        
+        // Randomly select recipes for each meal
+        const breakfast = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
+        const lunch = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
+        const dinner = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
+        
+        newMealPlan.push({
+          date: currentDate,
+          breakfast,
+          lunch,
+          dinner
+        });
+      }
       
-      newMealPlan.push({
-        date: currentDate,
-        breakfast,
-        lunch,
-        dinner
+      setMealPlan(newMealPlan);
+      
+      toast({
+        title: "Meal plan generated",
+        description: `Generated a ${daysToGenerate}-day meal plan starting from ${format(date, 'PPP')}`,
       });
+    } catch (error) {
+      toast({
+        title: "Error generating meal plan",
+        description: "Something went wrong, please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
     }
-    
-    setMealPlan(newMealPlan);
-    
-    toast({
-      title: "Meal plan generated",
-      description: `Generated a ${daysToGenerate}-day meal plan starting from ${format(date, 'PPP')}`,
-    });
   };
   
   return (
@@ -182,6 +202,7 @@ const MealPlanner = () => {
               dietaryPreferences={dietaryPreferences}
               setDietaryPreferences={setDietaryPreferences}
               generateMealPlan={generateMealPlan}
+              isGenerating={isGenerating}
             />
           </div>
           

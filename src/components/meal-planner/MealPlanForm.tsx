@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ChefHat } from 'lucide-react';
 
 interface MealPlanFormProps {
   daysToGenerate: number;
@@ -11,6 +12,7 @@ interface MealPlanFormProps {
   dietaryPreferences: string;
   setDietaryPreferences: (prefs: string) => void;
   generateMealPlan: () => void;
+  isGenerating?: boolean;
 }
 
 const MealPlanForm: React.FC<MealPlanFormProps> = ({
@@ -18,12 +20,16 @@ const MealPlanForm: React.FC<MealPlanFormProps> = ({
   setDaysToGenerate,
   dietaryPreferences,
   setDietaryPreferences,
-  generateMealPlan
+  generateMealPlan,
+  isGenerating = false
 }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Generate Meal Plan</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <ChefHat className="h-5 w-5" />
+          Generate Meal Plan
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -37,6 +43,7 @@ const MealPlanForm: React.FC<MealPlanFormProps> = ({
               min="1" 
               max="14" 
             />
+            <p className="text-xs text-muted-foreground">Choose between 1-14 days</p>
           </div>
           
           <div className="space-y-2">
@@ -47,13 +54,16 @@ const MealPlanForm: React.FC<MealPlanFormProps> = ({
               value={dietaryPreferences}
               onChange={(e) => setDietaryPreferences(e.target.value)}
             />
+            <p className="text-xs text-muted-foreground">Separate multiple preferences with commas</p>
           </div>
           
           <Button 
-            className="w-full bg-avocado hover:bg-avocado/90"
+            className="w-full bg-avocado hover:bg-avocado/90 flex items-center gap-2"
             onClick={generateMealPlan}
+            disabled={isGenerating}
           >
-            Generate Meal Plan
+            <ChefHat className="h-4 w-4" />
+            {isGenerating ? 'Generating...' : 'Generate Meal Plan'}
           </Button>
         </div>
       </CardContent>
