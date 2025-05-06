@@ -35,13 +35,6 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFo
           <div className="relative">
             <div className="p-4 rounded-lg bg-secondary">
               <div className="flex items-center space-x-4">
-                <div className="w-20 h-20 rounded-md overflow-hidden">
-                  <img
-                    src={originalFood.image}
-                    alt={originalFood.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
                 <div className="flex flex-col flex-1">
                   <div className="flex justify-between items-start">
                     <div>
@@ -71,13 +64,6 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFo
           
           <div className="p-4 rounded-lg bg-primary/10 mt-8">
             <div className="flex items-center space-x-4">
-              <div className="w-20 h-20 rounded-md overflow-hidden">
-                <img
-                  src={alternativeFood.image}
-                  alt={alternativeFood.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
               <div className="flex flex-col flex-1">
                 <div className="flex justify-between items-start">
                   <div>
