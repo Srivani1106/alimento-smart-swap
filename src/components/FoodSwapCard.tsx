@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
 import { FoodItem } from '@/data/foodData';
 import { ArrowDown } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface FoodSwapCardProps {
   originalFood: FoodItem;
@@ -13,6 +14,14 @@ interface FoodSwapCardProps {
 }
 
 const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFood }) => {
+  const handleUseAlternative = () => {
+    toast({
+      title: "Alternative Added",
+      description: `${alternativeFood.name} has been added to your shopping list.`,
+      duration: 3000,
+    });
+  };
+  
   return (
     <Card className="animate-fade-in food-card">
       <CardHeader className="pb-2">
@@ -89,7 +98,7 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFo
             </div>
           </div>
           
-          <Button className="w-full">Use This Alternative</Button>
+          <Button className="w-full" onClick={handleUseAlternative}>Use This Alternative</Button>
         </div>
       </CardContent>
     </Card>

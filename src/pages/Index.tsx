@@ -13,6 +13,17 @@ import { Utensils, Cookie, Heart } from 'lucide-react';
 const Index = () => {
   const [activeTab, setActiveTab] = useState("recipes");
 
+  // Define pairs for food swaps
+  const foodSwapPairs = [
+    { original: foodItems[1], alternative: foodItems[0] },  // Eggs -> Almonds
+    { original: foodItems[3], alternative: foodItems[2] },  // Cow's Milk -> White Rice
+    { original: foodItems[4], alternative: foodItems[2] },  // Wheat Bread -> White Rice
+    { original: foodItems[5], alternative: foodItems[0] },  // Peanut Butter -> Almonds
+    { original: foodItems[6], alternative: foodItems[2] },  // Shrimp -> White Rice
+    { original: foodItems[7], alternative: foodItems[0] },  // Soy Sauce -> Almonds
+    { original: foodItems[8], alternative: foodItems[2] }   // Yogurt -> White Rice
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -70,8 +81,13 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="swaps" className="space-y-6 mt-0">
-                <FoodSwapCard originalFood={foodItems[1]} alternativeFood={foodItems[0]} />
-                <FoodSwapCard originalFood={foodItems[3]} alternativeFood={foodItems[2]} />
+                {foodSwapPairs.map((pair, index) => (
+                  <FoodSwapCard 
+                    key={`swap-${index}`} 
+                    originalFood={pair.original} 
+                    alternativeFood={pair.alternative} 
+                  />
+                ))}
               </TabsContent>
               
               <TabsContent value="favorites" className="mt-0">
