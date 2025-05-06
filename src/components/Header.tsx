@@ -1,10 +1,24 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Search, User, Egg } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, User, Egg, LogIn } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Header: React.FC = () => {
+  const { user, isAuthenticated, signOut } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    signOut();
+    toast({
+      title: "Signed out",
+      description: "You have been successfully signed out.",
+    });
+  };
+
   return (
     <header className="bg-white shadow-sm py-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -38,9 +52,27 @@ const Header: React.FC = () => {
             <Search className="h-5 w-5 md:hidden" />
           </Button>
           
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <User className="h-5 w-5" />
-          </Button>
+          {isAuthenticated ? (
+            <div className="flex items-center space-x-2">
+              <span className="hidden md:inline text-sm">Hi, {user?.name}</span>
+              <Button variant="outline" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/signin')} className="hidden md:flex">
+                <LogIn className="h-4 w-4 mr-2" />
+                Sign In
+              </Button>
+              <Button onClick={() => navigate('/signup')}>
+                Sign Up
+              </Button>
+              <Button variant="ghost" size="icon" className="rounded-full md:hidden" onClick={() => navigate('/signin')}>
+                <User className="h-5 w-5" />
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </header>
