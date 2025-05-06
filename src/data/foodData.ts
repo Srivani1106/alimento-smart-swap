@@ -1,3 +1,4 @@
+
 export interface FoodItem {
   id: string;
   name: string;
@@ -42,7 +43,7 @@ export const foodItems: FoodItem[] = [
     id: "1",
     name: "Almonds",
     category: "Nuts",
-    image: "https://images.unsplash.com/photo-1574883052806-413e0a1f71ad?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     nutrition: {
       calories: 164,
       protein: 6,
@@ -112,7 +113,7 @@ export const foodItems: FoodItem[] = [
     id: "6",
     name: "Peanut Butter",
     category: "Spreads",
-    image: "https://images.unsplash.com/photo-1528711252568-7905fe3296fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1582562124811-c09040d0a901?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     nutrition: {
       calories: 188,
       protein: 8,
@@ -126,7 +127,7 @@ export const foodItems: FoodItem[] = [
     id: "7",
     name: "Shrimp",
     category: "Seafood",
-    image: "https://images.unsplash.com/photo-1565680018392-ced931a6dafc?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
     nutrition: {
       calories: 99,
       protein: 24,
