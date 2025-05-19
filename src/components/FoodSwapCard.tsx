@@ -5,15 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
 import { FoodItem } from '@/data/foodData';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, Heart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 interface FoodSwapCardProps {
   originalFood: FoodItem;
   alternativeFood: FoodItem;
+  isFavorite?: boolean;
+  onToggleFavorite?: (original: string, alternative: string) => void;
+  id: string; // Add an id prop to identify this swap
 }
 
-const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFood }) => {
+const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ 
+  originalFood, 
+  alternativeFood, 
+  isFavorite = false, 
+  onToggleFavorite,
+  id
+}) => {
   const handleUseAlternative = () => {
     toast({
       title: "Alternative Added",
@@ -21,14 +30,39 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ originalFood, alternativeFo
       duration: 3000,
     });
   };
+
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent any other handlers from firing
+    
+    if (onToggleFavorite) {
+      onToggleFavorite(originalFood.id, alternativeFood.id);
+    }
+    
+    toast({
+      title: isFavorite ? "Removed from favorites" : "Added to favorites",
+      description: `${originalFood.name} to ${alternativeFood.name} swap has been ${isFavorite ? 'removed from' : 'added to'} your favorites`,
+    });
+  };
   
   return (
     <Card className="animate-fade-in food-card">
       <CardHeader className="pb-2">
-        <h3 className="text-lg font-medium">Smart Swap Suggestion</h3>
-        <p className="text-sm text-muted-foreground">
-          Allergy-friendly alternative based on your profile
-        </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h3 className="text-lg font-medium">Smart Swap Suggestion</h3>
+            <p className="text-sm text-muted-foreground">
+              Allergy-friendly alternative based on your profile
+            </p>
+          </div>
+          <button 
+            onClick={toggleFavorite}
+            className="bg-white/80 rounded-full p-1.5 transition-colors hover:bg-white"
+          >
+            <Heart 
+              className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`}
+            />
+          </button>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

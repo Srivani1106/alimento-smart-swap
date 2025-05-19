@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -12,30 +13,50 @@ import { Utensils, Cookie, Heart } from 'lucide-react';
 const Index = () => {
   const [activeTab, setActiveTab] = useState("recipes");
   const [favoriteRecipes, setFavoriteRecipes] = useState<string[]>([]);
+  const [favoriteSwaps, setFavoriteSwaps] = useState<{id: string, original: string, alternative: string}[]>([]);
   
   // Load favorites from localStorage on component mount
   useEffect(() => {
-    const storedFavorites = localStorage.getItem('favoriteRecipes');
-    if (storedFavorites) {
-      setFavoriteRecipes(JSON.parse(storedFavorites));
+    const storedFavoriteRecipes = localStorage.getItem('favoriteRecipes');
+    if (storedFavoriteRecipes) {
+      setFavoriteRecipes(JSON.parse(storedFavoriteRecipes));
+    }
+    
+    const storedFavoriteSwaps = localStorage.getItem('favoriteSwaps');
+    if (storedFavoriteSwaps) {
+      setFavoriteSwaps(JSON.parse(storedFavoriteSwaps));
     }
   }, []);
 
   // Define pairs for food swaps
   const foodSwapPairs = [
-    { original: foodItems[1], alternative: foodItems[0] },  // Eggs -> Almonds
-    { original: foodItems[3], alternative: foodItems[2] },  // Cow's Milk -> White Rice
-    { original: foodItems[4], alternative: foodItems[2] },  // Wheat Bread -> White Rice
-    { original: foodItems[5], alternative: foodItems[0] },  // Peanut Butter -> Almonds
-    { original: foodItems[6], alternative: foodItems[2] },  // Shrimp -> White Rice
-    { original: foodItems[7], alternative: foodItems[0] },  // Soy Sauce -> Almonds
-    { original: foodItems[8], alternative: foodItems[2] }   // Yogurt -> White Rice
+    { id: "swap-1", original: foodItems[1], alternative: foodItems[0] },  // Eggs -> Almonds
+    { id: "swap-2", original: foodItems[3], alternative: foodItems[2] },  // Cow's Milk -> White Rice
+    { id: "swap-3", original: foodItems[4], alternative: foodItems[2] },  // Wheat Bread -> White Rice
+    { id: "swap-4", original: foodItems[5], alternative: foodItems[0] },  // Peanut Butter -> Almonds
+    { id: "swap-5", original: foodItems[6], alternative: foodItems[2] },  // Shrimp -> White Rice
+    { id: "swap-6", original: foodItems[7], alternative: foodItems[0] },  // Soy Sauce -> Almonds
+    { id: "swap-7", original: foodItems[8], alternative: foodItems[2] }   // Yogurt -> White Rice
   ];
 
   // Filter recipes to get only favorites
   const filteredFavoriteRecipes = recipes.filter(recipe => 
     favoriteRecipes.includes(recipe.id)
   );
+  
+  // Filter swaps to get only favorites
+  const filteredFavoriteSwaps = foodSwapPairs.filter(swap => 
+    favoriteSwaps.some(fs => fs.id === swap.id)
+  );
+  
+  const handleToggleFavoriteSwap = (swapId: string, originalId: string, alternativeId: string) => {
+    const newFavoriteSwaps = favoriteSwaps.some(fs => fs.id === swapId)
+      ? favoriteSwaps.filter(fs => fs.id !== swapId)
+      : [...favoriteSwaps, { id: swapId, original: originalId, alternative: alternativeId }];
+    
+    setFavoriteSwaps(newFavoriteSwaps);
+    localStorage.setItem('favoriteSwaps', JSON.stringify(newFavoriteSwaps));
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,30 +126,62 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="swaps" className="space-y-6 mt-0">
-                {foodSwapPairs.map((pair, index) => (
+                {foodSwapPairs.map((pair) => (
                   <FoodSwapCard 
-                    key={`swap-${index}`} 
+                    key={pair.id} 
+                    id={pair.id}
                     originalFood={pair.original} 
-                    alternativeFood={pair.alternative} 
+                    alternativeFood={pair.alternative}
+                    isFavorite={favoriteSwaps.some(fs => fs.id === pair.id)}
+                    onToggleFavorite={(originalId, alternativeId) => 
+                      handleToggleFavoriteSwap(pair.id, originalId, alternativeId)
+                    }
                   />
                 ))}
               </TabsContent>
               
               <TabsContent value="favorites" className="mt-0">
-                {filteredFavoriteRecipes.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {filteredFavoriteRecipes.map((recipe) => (
-                      <RecipeCard 
-                        key={recipe.id} 
-                        recipe={recipe}
-                        isFavorite={true}
-                        onToggleFavorite={(id) => {
-                          const newFavorites = favoriteRecipes.filter(recipeId => recipeId !== id);
-                          setFavoriteRecipes(newFavorites);
-                          localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
-                        }}
-                      />
-                    ))}
+                {(filteredFavoriteRecipes.length > 0 || filteredFavoriteSwaps.length > 0) ? (
+                  <div className="space-y-6">
+                    {filteredFavoriteRecipes.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Favorite Recipes</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          {filteredFavoriteRecipes.map((recipe) => (
+                            <RecipeCard 
+                              key={recipe.id} 
+                              recipe={recipe}
+                              isFavorite={true}
+                              onToggleFavorite={(id) => {
+                                const newFavorites = favoriteRecipes.filter(recipeId => recipeId !== id);
+                                setFavoriteRecipes(newFavorites);
+                                localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+                              }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {filteredFavoriteSwaps.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Favorite Smart Swaps</h3>
+                        <div className="space-y-6">
+                          {filteredFavoriteSwaps.map((pair) => (
+                            <FoodSwapCard 
+                              key={pair.id}
+                              id={pair.id}
+                              originalFood={pair.original} 
+                              alternativeFood={pair.alternative}
+                              isFavorite={true}
+                              onToggleFavorite={(originalId, alternativeId) => 
+                                handleToggleFavoriteSwap(pair.id, originalId, alternativeId)
+                              } 
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <div className="text-center py-12">
