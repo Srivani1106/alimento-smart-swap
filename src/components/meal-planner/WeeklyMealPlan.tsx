@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/table';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, List } from 'lucide-react';
+import { Calendar, List, Pencil, X } from 'lucide-react';
 import MealPlanCard from '@/components/MealPlanCard';
 import type { MealPlanEntry } from '@/components/meal-planner/MealPlanTypes';
 import { Recipe } from '@/data/foodData';
