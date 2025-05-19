@@ -1,18 +1,38 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
 import { Recipe } from '@/data/foodData';
-import { Clock, ChevronDown } from 'lucide-react';
+import { Clock, ChevronDown, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
 
 interface RecipeCardProps {
   recipe: Recipe;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  
+  const toggleFavorite = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation to recipe detail page
+    setIsFavorite(!isFavorite);
+    
+    if (!isFavorite) {
+      toast({
+        title: "Added to favorites",
+        description: `${recipe.name} has been added to your favorites`,
+      });
+    } else {
+      toast({
+        title: "Removed from favorites",
+        description: `${recipe.name} has been removed from your favorites`,
+      });
+    }
+  };
+  
   return (
     <Card className="food-card h-full flex flex-col animate-fade-in">
       <div className="relative h-48 overflow-hidden">
@@ -28,6 +48,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
             </Badge>
           ))}
         </div>
+        <button 
+          onClick={toggleFavorite}
+          className="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 transition-colors hover:bg-white"
+        >
+          <Heart 
+            className={`h-5 w-5 ${isFavorite ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`}
+          />
+        </button>
       </div>
       <CardContent className="pt-4 flex-grow">
         <h3 className="text-lg font-medium mb-1">{recipe.name}</h3>

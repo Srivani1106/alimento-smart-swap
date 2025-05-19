@@ -11,13 +11,14 @@ import { Calendar } from '@/components/ui/calendar';
 import Header from '@/components/Header';
 import NutritionBadge from '@/components/NutritionBadge';
 import { recipes } from '@/data/foodData';
-import { ArrowLeft, Clock, Users, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, Clock, Users, Calendar as CalendarIcon, Heart } from 'lucide-react';
 
 const RecipeDetails = () => {
   const { id } = useParams();
   const { toast } = useToast();
   const [date, setDate] = useState<Date>(new Date());
   const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner'>('dinner');
+  const [isFavorite, setIsFavorite] = useState(false);
   
   const recipe = recipes.find(recipe => recipe.id === id);
   
@@ -47,6 +48,22 @@ const RecipeDetails = () => {
     });
   };
 
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+    
+    if (!isFavorite) {
+      toast({
+        title: "Added to favorites",
+        description: `${recipe.name} has been added to your favorites`,
+      });
+    } else {
+      toast({
+        title: "Removed from favorites",
+        description: `${recipe.name} has been removed from your favorites`,
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -72,6 +89,14 @@ const RecipeDetails = () => {
                   </Badge>
                 ))}
               </div>
+              <button 
+                onClick={toggleFavorite}
+                className="absolute top-4 right-4 bg-white/80 rounded-full p-2 transition-colors hover:bg-white"
+              >
+                <Heart 
+                  className={`h-6 w-6 ${isFavorite ? 'fill-rose-500 text-rose-500' : 'text-gray-500'}`}
+                />
+              </button>
             </div>
             
             <div>
