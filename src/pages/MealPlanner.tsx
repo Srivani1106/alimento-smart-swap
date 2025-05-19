@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import Header from '@/components/Header';
 import { recipes } from '@/data/foodData';
-import { useToast } from '@/components/ui/use-toast';
-import { format, addDays } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
+import { format, addDays, isSameDay } from 'date-fns';
 
 // Import refactored components
 import DateSelector from '@/components/meal-planner/DateSelector';
@@ -11,6 +11,7 @@ import MealDisplay from '@/components/meal-planner/MealDisplay';
 import MealPlanForm from '@/components/meal-planner/MealPlanForm';
 import RecipeSearch from '@/components/meal-planner/RecipeSearch';
 import NutritionOverview from '@/components/meal-planner/NutritionOverview';
+import WeeklyMealPlan from '@/components/meal-planner/WeeklyMealPlan';
 
 // Import types
 import { MealPlanEntry } from '@/components/meal-planner/MealPlanTypes';
@@ -84,10 +85,10 @@ const MealPlanner = () => {
   };
 
   // Remove a recipe from the meal plan
-  const removeRecipeFromMealPlan = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
+  const removeRecipeFromMealPlan = (targetDate: Date, mealType: 'breakfast' | 'lunch' | 'dinner') => {
     const updatedMealPlan = [...mealPlan];
     const entryIndex = updatedMealPlan.findIndex(
-      entry => entry.date.toDateString() === date.toDateString()
+      entry => isSameDay(entry.date, targetDate)
     );
 
     if (entryIndex >= 0) {
@@ -99,7 +100,7 @@ const MealPlanner = () => {
       
       toast({
         title: "Recipe removed",
-        description: `Removed ${mealType} from ${format(date, 'PPP')}`,
+        description: `Removed ${mealType} from ${format(targetDate, 'PPP')}`,
       });
     }
   };
@@ -191,6 +192,17 @@ const MealPlanner = () => {
           <div className="w-full md:w-3/5 space-y-6">
             <h1 className="text-3xl font-display font-bold">Meal Planner</h1>
             
+            {/* Display weekly meal plan if available */}
+            {mealPlan.length > 0 && (
+              <WeeklyMealPlan 
+                mealPlan={mealPlan}
+                selectedDate={date}
+                setDate={setDate}
+                getRecipeById={getRecipeById}
+                removeRecipeFromMealPlan={removeRecipeFromMealPlan}
+              />
+            )}
+            
             <div className="flex flex-col md:flex-row gap-4 items-start">
               {/* Date Picker Component */}
               <DateSelector date={date} setDate={setDate} />
@@ -200,7 +212,7 @@ const MealPlanner = () => {
                 date={date}
                 currentMealPlan={currentMealPlan}
                 getRecipeById={getRecipeById}
-                removeRecipeFromMealPlan={removeRecipeFromMealPlan}
+                removeRecipeFromMealPlan={(mealType) => removeRecipeFromMealPlan(date, mealType)}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 onAddMeal={handleAddMeal}

@@ -39,15 +39,6 @@ const MealDisplay: React.FC<MealDisplayProps> = ({
     <Card className="flex-1">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg">Meals for {format(date, 'PPP')}</CardTitle>
-        {hasMeals && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="h-8 gap-1"
-          >
-            <List className="h-4 w-4" /> View Full Plan
-          </Button>
-        )}
       </CardHeader>
       <CardContent>
         <Tabs defaultValue={activeTab} onValueChange={setActiveTab}>
