@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,26 +11,27 @@ import { toast } from '@/hooks/use-toast';
 
 interface RecipeCardProps {
   recipe: Recipe;
+  isFavorite?: boolean;
+  onToggleFavorite?: (id: string) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe }) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+const RecipeCard: React.FC<RecipeCardProps> = ({ 
+  recipe, 
+  isFavorite = false,
+  onToggleFavorite
+}) => {
   
   const toggleFavorite = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent navigation to recipe detail page
-    setIsFavorite(!isFavorite);
     
-    if (!isFavorite) {
-      toast({
-        title: "Added to favorites",
-        description: `${recipe.name} has been added to your favorites`,
-      });
-    } else {
-      toast({
-        title: "Removed from favorites",
-        description: `${recipe.name} has been removed from your favorites`,
-      });
+    if (onToggleFavorite) {
+      onToggleFavorite(recipe.id);
     }
+    
+    toast({
+      title: isFavorite ? "Removed from favorites" : "Added to favorites",
+      description: `${recipe.name} has been ${isFavorite ? 'removed from' : 'added to'} your favorites`,
+    });
   };
   
   return (

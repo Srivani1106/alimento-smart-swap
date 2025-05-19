@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +20,15 @@ const RecipeDetails = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   
   const recipe = recipes.find(recipe => recipe.id === id);
+  
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem('favoriteRecipes');
+    if (storedFavorites && id) {
+      const favorites = JSON.parse(storedFavorites);
+      setIsFavorite(favorites.includes(id));
+    }
+  }, [id]);
   
   if (!recipe) {
     return (
@@ -49,19 +57,25 @@ const RecipeDetails = () => {
   };
 
   const toggleFavorite = () => {
+    // Get current favorites
+    const storedFavorites = localStorage.getItem('favoriteRecipes');
+    let favorites: string[] = storedFavorites ? JSON.parse(storedFavorites) : [];
+    
+    // Toggle favorite status
+    if (isFavorite) {
+      favorites = favorites.filter(favId => favId !== id);
+    } else {
+      favorites.push(id as string);
+    }
+    
+    // Update localStorage and state
+    localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
     setIsFavorite(!isFavorite);
     
-    if (!isFavorite) {
-      toast({
-        title: "Added to favorites",
-        description: `${recipe.name} has been added to your favorites`,
-      });
-    } else {
-      toast({
-        title: "Removed from favorites",
-        description: `${recipe.name} has been removed from your favorites`,
-      });
-    }
+    toast({
+      title: isFavorite ? "Removed from favorites" : "Added to favorites",
+      description: `${recipe.name} has been ${isFavorite ? 'removed from' : 'added to'} your favorites`,
+    });
   };
 
   return (

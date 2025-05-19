@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import UserProfile from '@/components/UserProfile';
@@ -12,6 +11,15 @@ import { Utensils, Cookie, Heart } from 'lucide-react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("recipes");
+  const [favoriteRecipes, setFavoriteRecipes] = useState<string[]>([]);
+  
+  // Load favorites from localStorage on component mount
+  useEffect(() => {
+    const storedFavorites = localStorage.getItem('favoriteRecipes');
+    if (storedFavorites) {
+      setFavoriteRecipes(JSON.parse(storedFavorites));
+    }
+  }, []);
 
   // Define pairs for food swaps
   const foodSwapPairs = [
@@ -23,6 +31,11 @@ const Index = () => {
     { original: foodItems[7], alternative: foodItems[0] },  // Soy Sauce -> Almonds
     { original: foodItems[8], alternative: foodItems[2] }   // Yogurt -> White Rice
   ];
+
+  // Filter recipes to get only favorites
+  const filteredFavoriteRecipes = recipes.filter(recipe => 
+    favoriteRecipes.includes(recipe.id)
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -75,7 +88,18 @@ const Index = () => {
               <TabsContent value="recipes" className="mt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   {recipes.map((recipe) => (
-                    <RecipeCard key={recipe.id} recipe={recipe} />
+                    <RecipeCard 
+                      key={recipe.id} 
+                      recipe={recipe}
+                      isFavorite={favoriteRecipes.includes(recipe.id)}
+                      onToggleFavorite={(id) => {
+                        const newFavorites = favoriteRecipes.includes(id)
+                          ? favoriteRecipes.filter(recipeId => recipeId !== id)
+                          : [...favoriteRecipes, id];
+                        setFavoriteRecipes(newFavorites);
+                        localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+                      }}
+                    />
                   ))}
                 </div>
               </TabsContent>
@@ -91,16 +115,33 @@ const Index = () => {
               </TabsContent>
               
               <TabsContent value="favorites" className="mt-0">
-                <div className="text-center py-12">
-                  <Heart className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No favorites yet</h3>
-                  <p className="text-muted-foreground mb-4">
-                    Save your favorite recipes and swaps for quick access
-                  </p>
-                  <Button variant="outline" onClick={() => setActiveTab("recipes")}>
-                    Browse Recipes
-                  </Button>
-                </div>
+                {filteredFavoriteRecipes.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {filteredFavoriteRecipes.map((recipe) => (
+                      <RecipeCard 
+                        key={recipe.id} 
+                        recipe={recipe}
+                        isFavorite={true}
+                        onToggleFavorite={(id) => {
+                          const newFavorites = favoriteRecipes.filter(recipeId => recipeId !== id);
+                          setFavoriteRecipes(newFavorites);
+                          localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Heart className="mx-auto h-12 w-12 text-muted-foreground/50 mb-4" />
+                    <h3 className="text-lg font-medium mb-2">No favorites yet</h3>
+                    <p className="text-muted-foreground mb-4">
+                      Save your favorite recipes and swaps for quick access
+                    </p>
+                    <Button variant="outline" onClick={() => setActiveTab("recipes")}>
+                      Browse Recipes
+                    </Button>
+                  </div>
+                )}
               </TabsContent>
             </Tabs>
           </div>
