@@ -10,6 +10,7 @@ import MealPlanner from "./pages/MealPlanner";
 import RecipeDetails from "./pages/RecipeDetails";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+import BMICalculatorPage from "./pages/BMICalculator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/meal-planner" element={<MealPlanner />} />
             <Route path="/recipe/:id" element={<RecipeDetails />} />
+            <Route path="/bmi-calculator" element={<BMICalculatorPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

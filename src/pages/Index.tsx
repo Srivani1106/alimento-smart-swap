@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -8,7 +7,7 @@ import RecipeCard from '@/components/RecipeCard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { foodItems, recipes } from '@/data/foodData';
-import { Utensils, Cookie, Heart } from 'lucide-react';
+import { Utensils, Cookie, Heart, Calculator } from 'lucide-react';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("recipes");
@@ -80,11 +79,19 @@ const Index = () => {
                     Get personalized recipes that adapt to your dietary needs and available ingredients
                   </p>
                 </div>
-                <Link to="/meal-planner">
-                  <Button className="bg-avocado hover:bg-avocado/90">
-                    Start Meal Planning
-                  </Button>
-                </Link>
+                <div className="flex gap-3">
+                  <Link to="/meal-planner">
+                    <Button className="bg-avocado hover:bg-avocado/90">
+                      Start Meal Planning
+                    </Button>
+                  </Link>
+                  <Link to="/bmi-calculator">
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Calculator className="h-4 w-4" />
+                      <span>BMI Calculator</span>
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
             
@@ -246,6 +253,13 @@ const Index = () => {
                     <div className="bg-rose-500 h-2 rounded-full" style={{ width: '93%' }}></div>
                   </div>
                 </div>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t">
+                <Link to="/bmi-calculator" className="flex items-center justify-between text-sm text-primary hover:underline">
+                  <span>Calculate your BMI</span>
+                  <Calculator className="h-4 w-4" />
+                </Link>
               </div>
             </div>
           </div>
