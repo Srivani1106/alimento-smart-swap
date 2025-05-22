@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
-import { recipes } from '@/data/foodData';
+import { recipes, foodItems } from '@/data/foodData';
 import { useToast } from '@/hooks/use-toast';
 import { format, addDays, isSameDay } from 'date-fns';
 
@@ -12,6 +11,7 @@ import MealPlanForm from '@/components/meal-planner/MealPlanForm';
 import RecipeSearch from '@/components/meal-planner/RecipeSearch';
 import NutritionOverview from '@/components/meal-planner/NutritionOverview';
 import WeeklyMealPlan from '@/components/meal-planner/WeeklyMealPlan';
+import UsedAlternatives, { UsedAlternative } from '@/components/meal-planner/UsedAlternatives';
 
 // Import types
 import { MealPlanEntry } from '@/components/meal-planner/MealPlanTypes';
@@ -24,7 +24,31 @@ const MealPlanner = () => {
   const [mealPlan, setMealPlan] = useState<MealPlanEntry[]>([]);
   const [activeTab, setActiveTab] = useState<string>('breakfast');
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [usedAlternatives, setUsedAlternatives] = useState<UsedAlternative[]>([]);
   const { toast } = useToast();
+  
+  // Retrieve used alternatives from local storage on component mount
+  useEffect(() => {
+    const storedAlternatives = localStorage.getItem('usedAlternatives');
+    if (storedAlternatives) {
+      try {
+        const parsedAlternatives = JSON.parse(storedAlternatives);
+        // Convert string dates back to Date objects
+        const alternativesWithDateObjects = parsedAlternatives.map((alt: any) => ({
+          ...alt,
+          date: new Date(alt.date)
+        }));
+        setUsedAlternatives(alternativesWithDateObjects);
+      } catch (error) {
+        console.error('Failed to parse stored alternatives', error);
+      }
+    }
+  }, []);
+
+  // Save used alternatives to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem('usedAlternatives', JSON.stringify(usedAlternatives));
+  }, [usedAlternatives]);
   
   // Filter recipes based on search query
   const filteredRecipes = recipes.filter(recipe => 
@@ -107,12 +131,31 @@ const MealPlanner = () => {
   
   // Handler for adding meals via the MealDisplay component
   const handleAddMeal = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
-    // Set the active tab to the selected meal type
     setActiveTab(mealType);
-    // Focus on the search input (handled by UI)
     toast({
       title: "Select a recipe",
       description: `Select a recipe for ${mealType} on ${format(date, 'PPP')}`,
+    });
+  };
+
+  // Handler for using a food alternative
+  const handleUseAlternative = (originalId: string, alternativeId: string) => {
+    const newAlternative: UsedAlternative = {
+      originalFoodId: originalId,
+      alternativeFoodId: alternativeId,
+      date: new Date()
+    };
+    
+    setUsedAlternatives(prev => [...prev, newAlternative]);
+  };
+
+  // Handler for removing a used alternative
+  const handleRemoveAlternative = (indexToRemove: number) => {
+    setUsedAlternatives(prev => prev.filter((_, index) => index !== indexToRemove));
+    
+    toast({
+      title: "Alternative removed",
+      description: "The alternative has been removed from your list",
     });
   };
 
@@ -121,12 +164,10 @@ const MealPlanner = () => {
     setIsGenerating(true);
     
     try {
-      // Add a small delay to show the loading state
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const preferences = dietaryPreferences.toLowerCase().split(',').map(p => p.trim());
       
-      // Filter recipes based on preferences if any are provided
       let eligibleRecipes = recipes;
       if (preferences.length > 0 && preferences[0] !== '') {
         eligibleRecipes = recipes.filter(recipe =>
@@ -135,7 +176,6 @@ const MealPlanner = () => {
           )
         );
         
-        // If no recipes match the preferences, use all recipes
         if (eligibleRecipes.length === 0) {
           eligibleRecipes = recipes;
           toast({
@@ -145,14 +185,12 @@ const MealPlanner = () => {
         }
       }
 
-      // Generate meal plan
       const newMealPlan: MealPlanEntry[] = [];
       const startDate = new Date(date);
       
       for (let i = 0; i < daysToGenerate; i++) {
         const currentDate = addDays(startDate, i);
         
-        // Randomly select recipes for each meal
         const breakfast = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
         const lunch = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
         const dinner = eligibleRecipes[Math.floor(Math.random() * eligibleRecipes.length)].id;
@@ -181,6 +219,18 @@ const MealPlanner = () => {
       setIsGenerating(false);
     }
   };
+  
+  // Create sample food swap data using real food items
+  const createSampleFoodSwaps = () => {
+    if (foodItems.length < 6) return [];
+    
+    return [
+      { original: foodItems[1], alternative: foodItems[8] }, // Eggs -> Yogurt
+      { original: foodItems[3], alternative: foodItems[6] }, // Cow's Milk -> Shrimp (odd but just for example)
+    ];
+  };
+  
+  const sampleFoodSwaps = createSampleFoodSwaps();
   
   return (
     <div className="min-h-screen bg-background">
@@ -228,6 +278,15 @@ const MealPlanner = () => {
               generateMealPlan={generateMealPlan}
               isGenerating={isGenerating}
             />
+
+            {/* Used Alternatives Component */}
+            {usedAlternatives.length > 0 && (
+              <UsedAlternatives 
+                usedAlternatives={usedAlternatives}
+                foodItems={foodItems}
+                onRemoveAlternative={handleRemoveAlternative}
+              />
+            )}
           </div>
           
           {/* Right Column */}
@@ -240,6 +299,23 @@ const MealPlanner = () => {
               activeTab={activeTab}
               addRecipeToMealPlan={addRecipeToMealPlan}
             />
+            
+            {/* Food Alternatives Section */}
+            {sampleFoodSwaps.length > 0 && (
+              <div className="space-y-4">
+                <h2 className="text-xl font-semibold">Suggested Alternatives</h2>
+                {sampleFoodSwaps.map((swap, index) => (
+                  <div key={index} className="mb-6">
+                    <FoodSwapCard
+                      id={`swap-${index}`}
+                      originalFood={swap.original}
+                      alternativeFood={swap.alternative}
+                      onUseAlternative={handleUseAlternative}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             
             {/* Nutrition Overview Component */}
             <NutritionOverview />

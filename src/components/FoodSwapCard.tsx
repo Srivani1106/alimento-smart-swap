@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,7 +12,8 @@ interface FoodSwapCardProps {
   alternativeFood: FoodItem;
   isFavorite?: boolean;
   onToggleFavorite?: (original: string, alternative: string) => void;
-  id: string; // Add an id prop to identify this swap
+  onUseAlternative?: (originalId: string, alternativeId: string) => void;
+  id: string;
 }
 
 const FoodSwapCard: React.FC<FoodSwapCardProps> = ({ 
@@ -21,6 +21,7 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
   alternativeFood, 
   isFavorite = false, 
   onToggleFavorite,
+  onUseAlternative,
   id
 }) => {
   const handleUseAlternative = () => {
@@ -29,10 +30,14 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
       description: `${alternativeFood.name} has been added to your shopping list.`,
       duration: 3000,
     });
+    
+    if (onUseAlternative) {
+      onUseAlternative(originalFood.id, alternativeFood.id);
+    }
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent any other handlers from firing
+    e.stopPropagation();
     
     if (onToggleFavorite) {
       onToggleFavorite(originalFood.id, alternativeFood.id);
