@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import { recipes, foodItems } from '@/data/foodData';
 import { useToast } from '@/hooks/use-toast';
 import { format, addDays, isSameDay } from 'date-fns';
+import FoodSwapCard from '@/components/FoodSwapCard';
 
 // Import refactored components
 import DateSelector from '@/components/meal-planner/DateSelector';
