@@ -1,11 +1,22 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import NutritionBadge from './NutritionBadge';
 import { FoodItem } from '@/data/foodData';
-import { ArrowDown, Heart } from 'lucide-react';
+import { ArrowDown, Heart, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface FoodSwapCardProps {
   originalFood: FoodItem;
@@ -24,16 +35,32 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
   onUseAlternative,
   id
 }) => {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [isConfirmed, setIsConfirmed] = useState(false);
+
   const handleUseAlternative = () => {
+    setDialogOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    setIsConfirmed(true);
+    
+    // Show a success toast
     toast({
       title: "Alternative Added",
-      description: `${alternativeFood.name} has been added to your shopping list.`,
+      description: `${alternativeFood.name} has been added as an alternative for ${originalFood.name}.`,
       duration: 3000,
     });
     
     if (onUseAlternative) {
       onUseAlternative(originalFood.id, alternativeFood.id);
     }
+    
+    // Reset the confirmed state after a delay
+    setTimeout(() => {
+      setIsConfirmed(false);
+    }, 2000);
   };
 
   const toggleFavorite = (e: React.MouseEvent) => {
@@ -71,6 +98,7 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
+          {/* Original Food */}
           <div className="relative">
             <div className="p-4 rounded-lg bg-secondary">
               <div className="flex items-center space-x-4">
@@ -101,6 +129,7 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
             </div>
           </div>
           
+          {/* Alternative Food */}
           <div className="p-4 rounded-lg bg-primary/10 mt-8">
             <div className="flex items-center space-x-4">
               <div className="flex flex-col flex-1">
@@ -123,9 +152,42 @@ const FoodSwapCard: React.FC<FoodSwapCardProps> = ({
             </div>
           </div>
           
-          <Button className="w-full" onClick={handleUseAlternative}>Use This Alternative</Button>
+          {/* Use Alternative Button */}
+          <Button 
+            className="w-full" 
+            onClick={handleUseAlternative}
+            disabled={isConfirmed}
+          >
+            {isConfirmed ? (
+              <>
+                <Check className="mr-1" size={16} />
+                Added to Alternatives
+              </>
+            ) : (
+              "Use This Alternative"
+            )}
+          </Button>
         </div>
       </CardContent>
+
+      {/* Confirmation Dialog */}
+      <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Alternative</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to use {alternativeFood.name} as an alternative for {originalFood.name}?
+              This will be added to your alternatives list.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm}>
+              Add to Alternatives
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };
